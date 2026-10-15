@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}學生首頁 - 金大校務系統{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h2>學生系統</h2>
+    <p class="muted">歡迎回來，{{ user.name }}（{{ user.user_id }}・{{ user.department }}）</p>
+  </div>
+  <span class="semester-tag">{{ semester }}</span>
+</div>
+
+<div class="cards-grid">
+  <div class="stat-card">
+    <div class="stat-num">{{ enrolled|length }}</div>
+    <div class="stat-label">本學期修課數</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num">{{ total_credits }}</div>
+    <div class="stat-label">本學期總學分</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num">{{ gpa_report.gpa if gpa_report.count else '—' }}</div>
+    <div class="stat-label">歷年 GPA</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num">{{ gpa_report.count }}</div>
+    <div class="stat-label">已採計學分</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <h3>本學期課表</h3>
+    <a href="{{ url_for('student_schedule') }}" class="btn btn-sm">查看完整課表</a>
+  </div>
+  <table class="table schedule-mini">
+    <thead><tr><th>節次</th>
+      {% for i in range(1,6) %}<th>週{{ weekday_names[i] }}</th>{% endfor %}
+    </tr></thead>
+    <tbody>
+    {% for period in range(1, 9) %}
+      <tr>
+        <td class="period-cell">第{{ period }}節</td>
+        {% for day in range(1, 6) %}
+          {% set found = [] %}
+          {% for c in enrolled %}
+            {% if c.weekday == day and c.period == period %}{% set _ = found.append(c) %}{% endif %}
+          {% endfor %}
+          <td class="sched-cell">
+            {% if found %}
+              <strong>{{ found[0].name }}</strong><br>
+              <small>{{ found[0].location }}</small>
+            {% else %}<span class="empty">—</span>{% endif %}
+          </td>
+        {% endfor %}
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <h3>修課與成績</h3>
+    <a href="{{ url_for('student_courses') }}" class="btn btn-sm">加退選</a>
+    <a href="{{ url_for('student_grades') }}" class="btn btn-sm">詳細成績</a>
+  </div>
+  <table class="table">
+    <thead><tr><th>課程代碼</th><th>課程名稱</th><th>開課單位</th><th>學分</th><th>師資</th><th>教室</th></tr></thead>
+    <tbody>
+    {% for c in enrolled %}
+      <tr>
+        <td>{{ c.course_id }}</td>
+        <td>{{ c.name }}</td>
+        <td>{{ c.department }}</td>
+        <td>{{ c.credits }}</td>
+        <td>{{ c.teacher_name }}</td>
+        <td>{{ c.location }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="6" class="empty">本學期尚未選課</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

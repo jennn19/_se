@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}行政總覽 - 金大校務系統{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h2>行政系統</h2>
+    <p class="muted">歡迎回來，{{ user.name }}（{{ user.user_id }}・{{ user.department }}）</p>
+  </div>
+</div>
+
+<div class="cards-grid">
+  <div class="stat-card"><div class="stat-num">{{ counts.students }}</div><div class="stat-label">學生人數</div></div>
+  <div class="stat-card"><div class="stat-num">{{ counts.teachers }}</div><div class="stat-label">教師人數</div></div>
+  <div class="stat-card"><div class="stat-num">{{ counts.courses }}</div><div class="stat-label">開設課程</div></div>
+  <div class="stat-card"><div class="stat-num">{{ counts.enrollments }}</div><div class="stat-label">選課紀錄</div></div>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <h3>課程一覽（{{ semester }}）</h3>
+    <a href="{{ url_for('admin_courses') }}" class="btn btn-sm">管理課程</a>
+  </div>
+  <table class="table">
+    <thead><tr><th>課程代碼</th><th>課程名稱</th><th>開課單位</th><th>學分</th><th>授課教師</th><th>時間</th><th>修課人數</th></tr></thead>
+    <tbody>
+    {% for c in courses %}
+      <tr>
+        <td><strong>{{ c.course_id }}</strong></td>
+        <td>{{ c.name }}</td>
+        <td>{{ c.department }}</td>
+        <td>{{ c.credits }}</td>
+        <td>{{ c.teacher_name }}</td>
+        <td>週{{ weekday_names[c.weekday] }} 第{{ c.period }}節</td>
+        <td>{{ c.enrolled_count }} / {{ c.capacity }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

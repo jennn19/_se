@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}登入 - 金大校務系統{% endblock %}
+{% block content %}
+<div class="login-wrap">
+  <form class="login-card" method="post" action="{{ url_for('login') }}">
+    <div class="login-badge">NQU</div>
+    <h2>校務系統登入</h2>
+    <p class="muted">{{ semester }}</p>
+    <label>身分別</label>
+    <select name="role">
+      <option value="student">學生</option>
+      <option value="teacher">教師</option>
+      <option value="admin">行政人員</option>
+    </select>
+    <label>帳號</label>
+    <input type="text" name="user_id" placeholder="請輸入學號 / 員工編號" required autofocus>
+    <label>密碼</label>
+    <input type="password" name="password" placeholder="請輸入密碼" required>
+    <button type="submit" class="btn btn-primary btn-block">登 入</button>
+    <hr>
+    <div class="hint">
+      <p><strong>學生：</strong>D10911101 / 1234</p>
+      <p><strong>教師：</strong>T001 / 8888</p>
+      <p><strong>行政：</strong>admin / admin</p>
+    </div>
+  </form>
+</div>
+{% endblock %}

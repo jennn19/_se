@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}成績查詢 - 金大校務系統{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h2>歷年成績查詢</h2>
+    <p class="muted">{{ user.name }}（{{ user.user_id }}）</p>
+  </div>
+  <div class="hero-stats">
+    <div><strong>{{ '%.2f'|format(gpa_report.gpa) }}</strong><span>平均 GPA</span></div>
+    <div><strong>{{ gpa_report.count }}</strong><span>已修學分</span></div>
+  </div>
+</div>
+
+<div class="card">
+  <table class="table">
+    <thead>
+      <tr><th>學期</th><th>課程代碼</th><th>課程名稱</th><th>開課單位</th><th>學分</th><th>成績</th></tr>
+    </thead>
+    <tbody>
+    {% for g in grades %}
+      <tr>
+        <td>{{ g.semester }}</td>
+        <td>{{ g.course_id }}</td>
+        <td>{{ g.name }}</td>
+        <td>{{ g.department }}</td>
+        <td>{{ g.credits }}</td>
+        <td>
+          {% if g.grade is not none %}
+            <span class="grade-chip {{ 'high' if g.grade >= 80 else ('mid' if g.grade >= 60 else 'low') }}">{{ g.grade }}</span>
+          {% else %}<span class="empty">未評</span>{% endif %}
+        </td>
+      </tr>
+    {% else %}
+      <tr><td colspan="6" class="empty">尚無成績資料</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

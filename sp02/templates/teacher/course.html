@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}課程名單與成績 - 金大校務系統{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h2>{{ course.name }}</h2>
+    <p class="muted">
+      {{ course.course_id }}・{{ course.department }}・{{ course.credits }} 學分　
+      週{{ weekday_names[course.weekday] }} 第{{ course.period }}節・{{ course.location }}
+    </p>
+  </div>
+  <a href="{{ url_for('teacher_home') }}" class="btn btn-sm">返回我的課程</a>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <h3>修課學生（{{ enrollments|length }} 人，已登錄 {{ graded }} 人）</h3>
+  </div>
+  <form method="post" action="{{ url_for('teacher_grade', course_id=course.course_id) }}">
+  <table class="table">
+    <thead><tr><th>#</th><th>學號</th><th>姓名</th><th>系所</th><th>成績</th></tr></thead>
+    <tbody>
+    {% for e in enrollments %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ e.user_id }}</td>
+        <td>{{ e.name }}</td>
+        <td>{{ e.stu_department }}</td>
+        <td>
+          <input class="grade-input" type="number" min="0" max="100" step="0.5"
+                 name="grade_{{ e.user_id }}" value="{{ e.grade if e.grade is not none else '' }}"
+                 placeholder="未評">
+        </td>
+      </tr>
+    {% else %}
+      <tr><td colspan="5" class="empty">尚無學生修讀此課程</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% if enrollments %}
+    <div class="form-actions">
+      <button class="btn btn-primary">儲存成績</button>
+    </div>
+  {% endif %}
+  </form>
+</div>
+{% endblock %}

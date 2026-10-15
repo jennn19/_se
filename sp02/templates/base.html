@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}金大校務系統{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+{% if session.get('user_id') %}
+<header class="topbar">
+  <div class="brand">
+    <span class="logo">NQU</span>
+    <div>
+      <h1>金大校務系統</h1>
+      <small>National Quemoy University · 校務行政資訊系統</small>
+    </div>
+  </div>
+  <nav class="main-nav">
+    {% set role = session.get('role') %}
+    {% if role == 'student' %}
+      <a href="{{ url_for('student_home') }}" class="{{ 'active' if request.path == '/student' }}">首頁</a>
+      <a href="{{ url_for('student_courses') }}" class="{{ 'active' if request.path.startswith('/student/courses') }}">選課系統</a>
+      <a href="{{ url_for('student_schedule') }}" class="{{ 'active' if request.path == '/student/schedule' }}">我的課表</a>
+      <a href="{{ url_for('student_grades') }}" class="{{ 'active' if request.path == '/student/grades' }}">成績查詢</a>
+    {% elif role == 'teacher' %}
+      <a href="{{ url_for('teacher_home') }}" class="{{ 'active' if request.path == '/teacher' }}">我的課程</a>
+    {% elif role == 'admin' %}
+      <a href="{{ url_for('admin_home') }}" class="{{ 'active' if request.path == '/admin' }}">總覽</a>
+      <a href="{{ url_for('admin_users') }}" class="{{ 'active' if request.path.startswith('/admin/users') }}">使用者管理</a>
+      <a href="{{ url_for('admin_courses') }}" class="{{ 'active' if request.path.startswith('/admin/courses') }}">課程管理</a>
+      <a href="{{ url_for('admin_enrollments') }}" class="{{ 'active' if request.path.startswith('/admin/enrollments') }}">選課紀錄</a>
+    {% endif %}
+  </nav>
+  <div class="user-box">
+    <span class="role-tag role-{{ role }}">{{ {'student':'學生','teacher':'教師','admin':'行政'}[role] }}</span>
+    <span>{{ session.get('name') }}</span>
+    <a class="btn btn-sm" href="{{ url_for('logout') }}">登出</a>
+  </div>
+</header>
+{% endif %}
+
+<main class="container">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-area">
+        {% for category, msg in messages %}
+          <div class="flash flash-{{ category }}">{{ msg }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+  金門大學校務系統 · 僅供教學示範用
+</footer>
+</body>
+</html>

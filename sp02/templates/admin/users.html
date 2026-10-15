@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}使用者管理 - 金大校務系統{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h2>使用者管理</h2><p class="muted">新增或刪除學生、教師、行政帳號</p></div>
+</div>
+
+<div class="card">
+  <div class="card-head"><h3>新增使用者</h3></div>
+  <form method="post" action="{{ url_for('admin_users') }}" class="form-row">
+    <input type="text" name="user_id" placeholder="學號 / 員工編號" required>
+    <input type="text" name="name" placeholder="姓名" required>
+    <input type="password" name="password" placeholder="密碼" required>
+    <select name="role">
+      <option value="student">學生</option>
+      <option value="teacher">教師</option>
+      <option value="admin">行政</option>
+    </select>
+    <input type="text" name="department" placeholder="系所 / 單位">
+    <button class="btn btn-primary">新增</button>
+  </form>
+</div>
+
+<div class="card">
+  <table class="table">
+    <thead>
+      <tr><th>帳號</th><th>姓名</th><th>身分別</th><th>系所 / 單位</th><th>操作</th></tr>
+    </thead>
+    <tbody>
+    {% for u in users %}
+      <tr>
+        <td><strong>{{ u.user_id }}</strong></td>
+        <td>{{ u.name }}</td>
+        <td><span class="role-tag role-{{ u.role }}">{{ {'student':'學生','teacher':'教師','admin':'行政'}[u.role] }}</span></td>
+        <td>{{ u.department or '—' }}</td>
+        <td>
+          {% if u.user_id != user.user_id %}
+          <form class="inline" method="post"
+                action="{{ url_for('admin_delete_user', user_id=u.user_id) }}"
+                onsubmit="return confirm('確定刪除 {{ u.name }}？');">
+            <button class="btn btn-sm btn-danger-outline">刪除</button>
+          </form>
+          {% else %}<span class="muted">目前登入</span>{% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

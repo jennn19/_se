@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}我的課表 - 金大校務系統{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h2>我的課表</h2>
+    <p class="muted">{{ semester }}</p>
+  </div>
+</div>
+
+<div class="card">
+  <table class="table schedule">
+    <thead>
+      <tr><th>節次 / 時間</th>
+        {% for i in range(1, 8) %}<th>週{{ weekday_names[i] }}</th>{% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+    {% for period in range(1, 10) %}
+      <tr>
+        <td class="period-cell">{{ periods[period-1][0] }}<br><small>{{ periods[period-1][1] }}</small></td>
+        {% for day in range(1, 8) %}
+          {% set c = grid[period][day-1] %}
+          <td class="sched-cell">
+            {% if c %}
+              <strong>{{ c.name }}</strong>
+              <br><small>{{ c.teacher_name }}<br>{{ c.location }}</small>
+            {% else %}
+              <span class="empty">—</span>
+            {% endif %}
+          </td>
+        {% endfor %}
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

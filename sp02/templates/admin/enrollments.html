@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}選課紀錄 - 金大校務系統{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h2>選課紀錄</h2><p class="muted">全校選課與成績資料一覽</p></div>
+</div>
+
+<div class="card">
+  <table class="table">
+    <thead>
+      <tr><th>學期</th><th>學號</th><th>姓名</th><th>系所</th><th>課程</th><th>開課單位</th><th>授課教師</th><th>成績</th><th>操作</th></tr>
+    </thead>
+    <tbody>
+    {% for e in enrollments %}
+      <tr>
+        <td>{{ e.semester }}</td>
+        <td>{{ e.student_id }}</td>
+        <td>{{ e.student_name }}</td>
+        <td>{{ e.stu_department }}</td>
+        <td>{{ e.course_name }}</td>
+        <td>{{ e.department }}</td>
+        <td>{{ e.teacher_name }}</td>
+        <td>
+          {% if e.grade is not none %}
+            <span class="grade-chip {{ 'high' if e.grade >= 80 else ('mid' if e.grade >= 60 else 'low') }}">{{ e.grade }}</span>
+          {% else %}<span class="empty">未評</span>{% endif %}
+        </td>
+        <td>
+          <form class="inline" method="post"
+                action="{{ url_for('admin_delete_enrollment', eid=e.id) }}"
+                onsubmit="return confirm('確定刪除此選課紀錄？');">
+            <button class="btn btn-sm btn-danger-outline">刪除</button>
+          </form>
+        </td>
+      </tr>
+    {% else %}
+      <tr><td colspan="9" class="empty">目前沒有選課紀錄</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
