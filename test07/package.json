@@ -1,0 +1,31 @@
+{
+  "name": "note-app",
+  "version": "1.0.0",
+  "description": "Express + Tailwind CSS note app with Vitest, Supertest and Playwright tests",
+  "private": true,
+  "type": "module",
+  "main": "server.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "vitest run",
+    "test:unit": "vitest run tests/validation.test.js",
+    "test:api": "vitest run tests/api.test.js",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:ui": "playwright test --ui",
+    "test:all": "npm test && npm run test:e2e"
+  },
+  "dependencies": {
+    "express": "^5.3.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "supertest": "^7.3.1",
+    "vitest": "^5.0.5"
+  }
+}
