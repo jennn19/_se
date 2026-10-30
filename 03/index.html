@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LocalRead</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f6f6f4;
+    --card: #ffffff;
+    --text: #1c1c1c;
+    --muted: #6b6b6b;
+    --accent: #2f6f4f;
+    --border: #e4e4e0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171a;
+      --card: #1e2126;
+      --text: #e8e8e6;
+      --muted: #9aa0a6;
+      --accent: #7cc4a0;
+      --border: #2c3036;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 32px 16px 64px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", "Microsoft JhengHei", sans-serif;
+    line-height: 1.7;
+  }
+  header, main, footer { max-width: 760px; margin: 0 auto; }
+  header h1 { margin: 0 0 4px; font-size: 1.8rem; }
+  header p { margin: 0 0 28px; color: var(--muted); }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 22px;
+    margin-bottom: 16px;
+  }
+  .card h2 { margin: 0 0 6px; font-size: 1.15rem; line-height: 1.4; }
+  .meta { margin: 0 0 10px; color: var(--muted); font-size: 0.85rem; }
+  .meta a, .card a { color: var(--accent); }
+  .excerpt { margin: 0 0 10px; color: var(--muted); }
+  details summary { cursor: pointer; color: var(--accent); font-size: 0.9rem; }
+  details p { margin: 12px 0 0; }
+  .empty { color: var(--muted); text-align: center; padding: 48px 0; }
+  code { background: var(--border); padding: 2px 6px; border-radius: 6px; }
+  footer { margin-top: 32px; color: var(--muted); font-size: 0.8rem; text-align: center; }
+</style>
+</head>
+<body>
+<header>
+  <h1>LocalRead</h1>
+  <p>共 0 篇 · 更新於 2026-10-30 10:27</p>
+</header>
+<main>
+<p class="empty">還沒有文章，執行 <code>python localread.py &lt;網址&gt;</code> 開始收藏。</p>
+</main>
+<footer>LocalRead · 資料只存在你的電腦</footer>
+</body>
+</html>
