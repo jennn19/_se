@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>LocalRead</title>
+<title>今日待辦</title>
 <style>
   :root {
     color-scheme: light dark;
@@ -12,7 +12,9 @@
     --text: #1c1c1c;
     --muted: #6b6b6b;
     --accent: #2f6f4f;
+    --accent-soft: #e3efe8;
     --border: #e4e4e0;
+    --danger: #b3463c;
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -21,7 +23,9 @@
       --text: #e8e8e6;
       --muted: #9aa0a6;
       --accent: #7cc4a0;
+      --accent-soft: #24342c;
       --border: #2c3036;
+      --danger: #e08a82;
     }
   }
   * { box-sizing: border-box; }
@@ -33,7 +37,7 @@
     font-family: system-ui, -apple-system, "Segoe UI", "Microsoft JhengHei", sans-serif;
     line-height: 1.7;
   }
-  header, main, footer { max-width: 760px; margin: 0 auto; }
+  header, main, footer { max-width: 640px; margin: 0 auto; }
   header h1 { margin: 0 0 4px; font-size: 1.8rem; }
   header p { margin: 0 0 28px; color: var(--muted); }
   .card {
@@ -41,27 +45,213 @@
     border: 1px solid var(--border);
     border-radius: 14px;
     padding: 20px 22px;
-    margin-bottom: 16px;
   }
-  .card h2 { margin: 0 0 6px; font-size: 1.15rem; line-height: 1.4; }
-  .meta { margin: 0 0 10px; color: var(--muted); font-size: 0.85rem; }
-  .meta a, .card a { color: var(--accent); }
-  .excerpt { margin: 0 0 10px; color: var(--muted); }
-  details summary { cursor: pointer; color: var(--accent); font-size: 0.9rem; }
-  details p { margin: 12px 0 0; }
-  .empty { color: var(--muted); text-align: center; padding: 48px 0; }
-  code { background: var(--border); padding: 2px 6px; border-radius: 6px; }
+  .add-form { display: flex; gap: 10px; }
+  .add-form input {
+    flex: 1;
+    min-width: 0;
+    padding: 12px 14px;
+    font: inherit;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    outline: none;
+  }
+  .add-form input:focus { border-color: var(--accent); }
+  .add-form button {
+    padding: 12px 20px;
+    font: inherit;
+    font-weight: 600;
+    color: #fff;
+    background: var(--accent);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  .add-form button:hover { opacity: 0.9; }
+  .status { margin: 18px 0 4px; color: var(--muted); font-size: 0.85rem; }
+  .progress {
+    height: 6px;
+    background: var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .progress span {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: var(--accent);
+    border-radius: 999px;
+    transition: width 0.25s ease;
+  }
+  ul.todos { list-style: none; margin: 18px 0 0; padding: 0; }
+  ul.todos li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-top: 1px solid var(--border);
+  }
+  ul.todos li:first-child { border-top: none; }
+  .check {
+    flex: none;
+    width: 22px;
+    height: 22px;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+  .label { flex: 1; word-break: break-word; cursor: pointer; }
+  .done .label { color: var(--muted); text-decoration: line-through; }
+  .delete {
+    flex: none;
+    padding: 4px 8px;
+    font: inherit;
+    font-size: 0.85rem;
+    color: var(--muted);
+    background: none;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .delete:hover { color: var(--danger); background: var(--accent-soft); }
+  .empty { color: var(--muted); text-align: center; padding: 40px 0 24px; }
+  .empty strong { display: block; color: var(--text); margin-bottom: 4px; }
   footer { margin-top: 32px; color: var(--muted); font-size: 0.8rem; text-align: center; }
 </style>
 </head>
 <body>
 <header>
-  <h1>LocalRead</h1>
-  <p>共 0 篇 · 更新於 2026-10-30 10:27</p>
+  <h1>今日待辦</h1>
+  <p id="today">—</p>
 </header>
 <main>
-<p class="empty">還沒有文章，執行 <code>python localread.py &lt;網址&gt;</code> 開始收藏。</p>
+  <section class="card">
+    <form class="add-form" id="add-form">
+      <input id="new-todo" type="text" placeholder="新增今天的待辦事項…" autocomplete="off" maxlength="200" required>
+      <button type="submit">新增</button>
+    </form>
+    <p class="status" id="status"></p>
+    <div class="progress"><span id="progress"></span></div>
+    <ul class="todos" id="todos"></ul>
+  </section>
 </main>
-<footer>LocalRead · 資料只存在你的電腦</footer>
+<footer>資料只存在你的瀏覽器 · 每天自動換新的一天</footer>
+<script>
+(function () {
+  const form = document.getElementById("add-form");
+  const input = document.getElementById("new-todo");
+  const list = document.getElementById("todos");
+  const status = document.getElementById("status");
+  const progress = document.getElementById("progress");
+  const todayEl = document.getElementById("today");
+
+  const dayKey = () => {
+    const d = new Date();
+    const pad = (n) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  };
+
+  let key = "todos:" + dayKey();
+  let todos = load();
+
+  function load() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(key) || "[]");
+      return Array.isArray(raw) ? raw : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function save() {
+    localStorage.setItem(key, JSON.stringify(todos));
+  }
+
+  function render() {
+    list.textContent = "";
+    const done = todos.filter((t) => t.done).length;
+
+    status.textContent = todos.length
+      ? `完成 ${done} / ${todos.length} 項`
+      : "今天還沒有待辦事項";
+    progress.style.width = todos.length ? `${(done / todos.length) * 100}%` : "0";
+
+    if (!todos.length) {
+      const empty = document.createElement("li");
+      empty.className = "empty";
+      const strong = document.createElement("strong");
+      strong.textContent = "今天想做什麼？";
+      empty.append(strong, "在上面輸入第一件待辦事項吧。");
+      list.append(empty);
+      return;
+    }
+
+    for (const todo of todos) {
+      const li = document.createElement("li");
+      if (todo.done) li.className = "done";
+
+      const check = document.createElement("input");
+      check.type = "checkbox";
+      check.className = "check";
+      check.checked = todo.done;
+      check.setAttribute("aria-label", todo.text);
+      check.addEventListener("change", () => {
+        todo.done = check.checked;
+        save();
+        render();
+      });
+
+      const label = document.createElement("span");
+      label.className = "label";
+      label.textContent = todo.text;
+      label.addEventListener("click", () => check.click());
+
+      const del = document.createElement("button");
+      del.type = "button";
+      del.className = "delete";
+      del.textContent = "刪除";
+      del.addEventListener("click", () => {
+        todos = todos.filter((t) => t.id !== todo.id);
+        save();
+        render();
+      });
+
+      li.append(check, label, del);
+      list.append(li);
+    }
+  }
+
+  function refreshDate() {
+    const next = "todos:" + dayKey();
+    if (next !== key) {
+      key = next;
+      todos = load();
+      render();
+    }
+    todayEl.textContent = new Intl.DateTimeFormat("zh-Hant", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      weekday: "long",
+    }).format(new Date());
+  }
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const text = input.value.trim();
+    if (!text) return;
+    todos.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), text, done: false });
+    input.value = "";
+    save();
+    render();
+    input.focus();
+  });
+
+  refreshDate();
+  render();
+  setInterval(refreshDate, 60 * 1000);
+})();
+</script>
 </body>
 </html>
