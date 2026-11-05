@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="任務中心 Pro：專案、優先度、子任務、重複任務與完成統計的本機待辦事項管理工具。">
+<title>任務中心 Pro</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">✓</span>
+      <div>
+        <strong>任務中心</strong>
+        <small>Pro</small>
+      </div>
+    </div>
+
+    <button class="primary new-task" id="new-task" type="button">
+      <span>＋ 新增任務</span>
+      <kbd>N</kbd>
+    </button>
+
+    <nav class="nav" aria-label="主要導覽">
+      <p class="nav-title">智慧清單</p>
+      <button class="nav-item" type="button" data-view="today">
+        <span class="nav-icon" aria-hidden="true">☀</span>
+        <span class="nav-name">今天</span>
+        <span class="count" data-count="today"></span>
+      </button>
+      <button class="nav-item" type="button" data-view="upcoming">
+        <span class="nav-icon" aria-hidden="true">◷</span>
+        <span class="nav-name">未來 7 天</span>
+        <span class="count" data-count="upcoming"></span>
+      </button>
+      <button class="nav-item" type="button" data-view="all">
+        <span class="nav-icon" aria-hidden="true">▤</span>
+        <span class="nav-name">全部任務</span>
+        <span class="count" data-count="all"></span>
+      </button>
+      <button class="nav-item" type="button" data-view="completed">
+        <span class="nav-icon" aria-hidden="true">✓</span>
+        <span class="nav-name">已完成</span>
+        <span class="count" data-count="completed"></span>
+      </button>
+
+      <p class="nav-title">
+        專案
+        <button class="icon-btn" id="add-list" type="button" title="新增專案" aria-label="新增專案">＋</button>
+      </p>
+      <div id="lists" class="lists"></div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="ghost-btn" id="export-btn" type="button">匯出資料</button>
+      <button class="ghost-btn" id="import-btn" type="button">匯入資料</button>
+      <button class="ghost-btn" id="theme-btn" type="button">主題：自動</button>
+    </div>
+  </aside>
+
+  <div class="backdrop" id="backdrop"></div>
+
+  <main class="main">
+    <header class="topbar">
+      <button class="icon-btn menu-btn" id="menu-btn" type="button" aria-label="開啟選單">☰</button>
+      <div class="title-wrap">
+        <h1 id="view-title">今天</h1>
+        <p id="view-subtitle">—</p>
+      </div>
+      <label class="search">
+        <span aria-hidden="true">⌕</span>
+        <input id="search" type="search" placeholder="搜尋任務（按 /）" autocomplete="off" aria-label="搜尋任務">
+      </label>
+      <select id="sort" class="select" aria-label="排序方式">
+        <option value="custom">自訂順序</option>
+        <option value="due">到期日</option>
+        <option value="priority">優先度</option>
+        <option value="created">建立時間</option>
+      </select>
+    </header>
+
+    <section class="dashboard" aria-label="完成統計">
+      <div class="stat-grid">
+        <article class="stat">
+          <span class="stat-label">今日完成</span>
+          <strong id="stat-today">0</strong>
+          <small id="stat-today-sub">—</small>
+        </article>
+        <article class="stat">
+          <span class="stat-label">待完成</span>
+          <strong id="stat-open">0</strong>
+          <small id="stat-open-sub">—</small>
+        </article>
+        <article class="stat">
+          <span class="stat-label">完成率</span>
+          <strong id="stat-rate">—</strong>
+          <small id="stat-rate-sub">—</small>
+        </article>
+        <article class="stat">
+          <span class="stat-label">連續完成</span>
+          <strong id="stat-streak">0 天</strong>
+          <small id="stat-streak-sub">—</small>
+        </article>
+      </div>
+      <div class="chart-card">
+        <div class="chart-head">
+          <h2>近 14 天完成量</h2>
+          <span id="chart-total"></span>
+        </div>
+        <div class="chart" id="chart"></div>
+      </div>
+    </section>
+
+    <section class="toolbar" aria-label="篩選工具">
+      <div class="segmented" id="status-filter" role="group" aria-label="完成狀態">
+        <button type="button" data-status="all" class="active">全部</button>
+        <button type="button" data-status="active">待完成</button>
+        <button type="button" data-status="done">已完成</button>
+      </div>
+      <select id="priority-filter" class="select" aria-label="依優先度篩選">
+        <option value="all">所有優先度</option>
+        <option value="3">高優先度</option>
+        <option value="2">中優先度</option>
+        <option value="1">低優先度</option>
+      </select>
+      <select id="tag-filter" class="select" aria-label="依標籤篩選">
+        <option value="all">所有標籤</option>
+      </select>
+      <button class="ghost-btn clear-done" id="clear-done" type="button">清除已完成</button>
+    </section>
+
+    <form class="quick-add" id="quick-add">
+      <input id="quick-input" type="text" placeholder="快速新增任務，按 Enter 即可儲存" maxlength="200" autocomplete="off" aria-label="快速新增任務">
+      <button class="primary" type="submit">新增</button>
+      <button class="ghost-btn" id="detailed-add" type="button">詳細設定</button>
+    </form>
+
+    <ul class="task-list" id="task-list"></ul>
+    <div class="empty" id="empty" hidden></div>
+    <p class="hint" id="hint"></p>
+  </main>
+</div>
+
+<dialog id="task-dialog" class="dialog">
+  <form id="task-form">
+    <header>
+      <h2 id="task-dialog-title">新增任務</h2>
+      <button class="icon-btn" type="button" data-close aria-label="關閉">✕</button>
+    </header>
+    <div class="dialog-body">
+      <label class="field">
+        <span>任務名稱</span>
+        <input id="f-title" type="text" maxlength="200" required autocomplete="off">
+      </label>
+      <div class="grid-2">
+        <label class="field">
+          <span>專案</span>
+          <select id="f-list"></select>
+        </label>
+        <label class="field">
+          <span>優先度</span>
+          <select id="f-priority">
+            <option value="3">高</option>
+            <option value="2">中</option>
+            <option value="1">低</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>到期日</span>
+          <input id="f-due" type="date">
+        </label>
+        <label class="field">
+          <span>重複</span>
+          <select id="f-repeat">
+            <option value="none">不重複</option>
+            <option value="daily">每天</option>
+            <option value="weekly">每週</option>
+            <option value="monthly">每月</option>
+          </select>
+        </label>
+      </div>
+      <label class="field">
+        <span>標籤（以逗號分隔）</span>
+        <input id="f-tags" type="text" placeholder="例如：工作, 緊急" autocomplete="off">
+      </label>
+      <label class="field">
+        <span>備註</span>
+        <textarea id="f-notes" rows="3"></textarea>
+      </label>
+      <div class="field">
+        <span>子任務</span>
+        <div id="subtask-editor" class="subtask-editor"></div>
+        <div class="subtask-add">
+          <input id="f-subtask" type="text" placeholder="輸入子任務後按 Enter" maxlength="200" autocomplete="off">
+          <button class="ghost-btn" id="f-subtask-add" type="button">加入</button>
+        </div>
+      </div>
+    </div>
+    <footer class="dialog-footer">
+      <button class="danger-btn" id="f-delete" type="button" hidden>刪除任務</button>
+      <span class="spacer"></span>
+      <button class="ghost-btn" type="button" data-close>取消</button>
+      <button class="primary" type="submit">儲存</button>
+    </footer>
+  </form>
+</dialog>
+
+<dialog id="list-dialog" class="dialog small">
+  <form id="list-form">
+    <header>
+      <h2 id="list-dialog-title">新增專案</h2>
+      <button class="icon-btn" type="button" data-close aria-label="關閉">✕</button>
+    </header>
+    <div class="dialog-body">
+      <label class="field">
+        <span>專案名稱</span>
+        <input id="l-name" type="text" maxlength="40" required autocomplete="off">
+      </label>
+    </div>
+    <footer class="dialog-footer">
+      <span class="spacer"></span>
+      <button class="ghost-btn" type="button" data-close>取消</button>
+      <button class="primary" type="submit">儲存</button>
+    </footer>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden>
+  <span id="toast-msg"></span>
+  <button id="toast-action" type="button" hidden></button>
+</div>
+
+<input type="file" id="import-file" accept="application/json,.json" hidden>
+<script src="app.js"></script>
+</body>
+</html>
