@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="輸入冰箱裡剩下的食材，讓 Cloudflare Workers AI 幫你規劃 20 分鐘內能完成的晚餐食譜，剩食不浪費。"
+    />
+    <meta name="theme-color" content="#f7f1e6" />
+    <title>冰箱剩食食譜大師 · 一週晚餐靈感</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="site-header">
+        <a class="brand" href="/" aria-label="冰箱剩食食譜大師首頁">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" fill="none">
+              <rect x="7" y="4" width="18" height="24" rx="5" stroke="currentColor" stroke-width="2.2" />
+              <path d="M7 14h18" stroke="currentColor" stroke-width="2.2" />
+              <path d="M12 9v2.5M12 18v3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+            </svg>
+          </span>
+          <span class="brand-text">
+            <strong>冰箱剩食食譜大師</strong>
+            <small>Fridge to Table</small>
+          </span>
+        </a>
+        <span class="tech-badge">
+          <span class="dot" aria-hidden="true"></span>
+          Powered by Cloudflare Workers AI
+        </span>
+      </header>
+
+      <main>
+        <section class="hero">
+          <div class="hero-copy">
+            <p class="eyebrow">剩食不浪費 · 一週晚餐靈感</p>
+            <h1>
+              冰箱剩一點點，<br />
+              也能變出<span class="accent">一桌好菜</span>。
+            </h1>
+            <p class="lead">
+              把冰箱裡剩下的食材交給大廚。他會設計 1–2 道簡單、美味、20
+              分鐘內能完成的晚餐，優先幫你消耗快壞掉的食材。
+            </p>
+            <ul class="hero-points">
+              <li>優先使用現有食材</li>
+              <li>20 分鐘內上桌</li>
+              <li>份量自動換算</li>
+            </ul>
+          </div>
+
+          <div class="hero-art" aria-hidden="true">
+            <svg viewBox="0 0 420 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="210" cy="178" r="150" fill="#efe4cf" opacity="0.75" />
+              <circle cx="210" cy="178" r="112" stroke="#d9c9aa" stroke-width="1.5" stroke-dasharray="4 9" />
+
+              <ellipse cx="210" cy="315" rx="105" ry="14" fill="#d8c9ad" opacity="0.55" />
+
+              <rect x="148" y="62" width="132" height="236" rx="22" fill="#fffdf8" stroke="#2f2c26" stroke-width="3" />
+              <path d="M148 166h132" stroke="#2f2c26" stroke-width="3" />
+              <rect x="262" y="100" width="7" height="42" rx="3.5" fill="#2f2c26" />
+              <rect x="262" y="188" width="7" height="30" rx="3.5" fill="#2f2c26" />
+
+              <circle cx="186" cy="112" r="13" fill="#d9503f" />
+              <path d="M186 96c4-6 10-7 14-4-3 6-8 8-14 4Z" fill="#4f7a52" />
+              <rect x="205" y="96" width="26" height="34" rx="7" fill="#f2c14e" />
+
+              <circle cx="186" cy="205" r="10" fill="#7aa06b" />
+              <circle cx="206" cy="209" r="8" fill="#9fbf7f" />
+              <rect x="226" y="192" width="30" height="26" rx="8" fill="#e9b872" />
+              <path d="M231 192v-6M251 192v-6" stroke="#b6844a" stroke-width="2" stroke-linecap="round" />
+
+              <g transform="translate(72 232) rotate(-8)">
+                <rect x="0" y="0" width="54" height="38" rx="9" fill="#f5d7a1" stroke="#c9a05f" stroke-width="2" />
+                <path d="M12 12h30M12 21h22" stroke="#c9a05f" stroke-width="2" stroke-linecap="round" />
+              </g>
+
+              <g transform="translate(300 205) rotate(12)">
+                <circle cx="0" cy="0" r="21" fill="#d9503f" />
+                <path d="M0 -22c5-8 13-9 19-6-3 8-11 11-19 6Z" fill="#4f7a52" />
+                <circle cx="-5" cy="3" r="4" fill="#fffdf8" opacity="0.5" />
+              </g>
+
+              <g transform="translate(88 118)">
+                <circle cx="0" cy="0" r="23" fill="#fffdf8" stroke="#e4d8bf" stroke-width="2" />
+                <circle cx="0" cy="-2" r="9" fill="#f2c14e" />
+              </g>
+
+              <g transform="translate(296 92) rotate(16)">
+                <path d="M0 24c-10-9-17-17-17-26 0-7 9-10 17-1 8-9 17-6 17 1 0 9-7 17-17 26Z" fill="#7aa06b" />
+              </g>
+
+              <path d="M120 78c5-7 11-7 16 0" stroke="#c9a05f" stroke-width="2.5" stroke-linecap="round" />
+              <path d="M330 150c6-8 13-8 19 0" stroke="#c9a05f" stroke-width="2.5" stroke-linecap="round" />
+              <circle cx="348" cy="122" r="4" fill="#d9503f" opacity="0.7" />
+              <circle cx="64" cy="190" r="5" fill="#f2c14e" opacity="0.8" />
+            </svg>
+          </div>
+        </section>
+
+        <div class="workspace">
+          <section class="panel input-panel" aria-labelledby="input-title">
+            <div class="panel-head">
+              <h2 id="input-title">冰箱裡有什麼？</h2>
+              <p>輸入食材後按 Enter，或用下方常用食材快速加入。</p>
+            </div>
+
+            <form id="recipe-form" novalidate>
+              <div class="field">
+                <label for="ingredient-input">現有食材</label>
+                <div class="chips-input" id="chips-box">
+                  <ul class="chips" id="chips" aria-live="polite"></ul>
+                  <input
+                    id="ingredient-input"
+                    type="text"
+                    inputmode="text"
+                    autocomplete="off"
+                    maxlength="30"
+                    placeholder="例如：高麗菜、紅蘿蔔、剩半塊豆腐"
+                    aria-describedby="ingredient-hint"
+                  />
+                </div>
+                <p class="hint" id="ingredient-hint">數量或狀態也可以一起寫，例如「半顆」、「快壞掉了」。</p>
+              </div>
+
+              <div class="quick-add">
+                <span class="quick-label">常用食材</span>
+                <div class="quick-list" id="quick-list"></div>
+              </div>
+
+              <div class="form-row">
+                <div class="field field-servings">
+                  <label id="servings-label">用餐人數</label>
+                  <div class="stepper" role="group" aria-labelledby="servings-label">
+                    <button type="button" data-step="-1" aria-label="減少用餐人數">−</button>
+                    <output id="servings" aria-live="polite">2</output>
+                    <button type="button" data-step="1" aria-label="增加用餐人數">＋</button>
+                  </div>
+                </div>
+
+                <div class="field field-grow">
+                  <label for="notes">飲食限制或偏好 <span class="optional">選填</span></label>
+                  <input
+                    id="notes"
+                    type="text"
+                    maxlength="200"
+                    autocomplete="off"
+                    placeholder="素食、不吃辣、想清淡一點…"
+                  />
+                </div>
+              </div>
+
+              <button type="submit" class="primary" id="generate">
+                <span class="primary-label">開始規劃晚餐</span>
+                <span class="spinner" aria-hidden="true"></span>
+              </button>
+              <p class="form-note">
+                送出後會使用 Cloudflare Workers AI 生成食譜，約需 5–15 秒。食材與偏好只會用於本次生成。
+              </p>
+              <p class="inline-error" id="inline-error" role="alert" hidden></p>
+            </form>
+          </section>
+
+          <section class="panel result-panel" aria-labelledby="result-title">
+            <div class="panel-head result-head">
+              <div>
+                <h2 id="result-title">今晚的菜單</h2>
+                <p id="result-sub">大廚正在等你的食材。</p>
+              </div>
+              <div class="result-actions" id="result-actions" hidden>
+                <button type="button" class="ghost" id="copy-all">
+                  <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                    <rect x="7" y="7" width="9" height="10" rx="2" stroke="currentColor" stroke-width="1.6" />
+                    <path d="M5 13H4a1.5 1.5 0 0 1-1.5-1.5v-8A1.5 1.5 0 0 1 4 2h8A1.5 1.5 0 0 1 13.5 3.5V4" stroke="currentColor" stroke-width="1.6" />
+                  </svg>
+                  複製食譜
+                </button>
+                <button type="button" class="ghost" id="retry">
+                  <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                    <path d="M16 8a6.5 6.5 0 1 0-.6 4.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                    <path d="M16.5 3.5V8H12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                  再想一道
+                </button>
+              </div>
+            </div>
+
+            <div id="result" class="result" aria-live="polite">
+              <div class="empty-state">
+                <div class="empty-art" aria-hidden="true">
+                  <svg viewBox="0 0 160 120" fill="none">
+                    <ellipse cx="80" cy="105" rx="55" ry="8" fill="#e4dccb" />
+                    <path d="M38 46h84l-8 52a10 10 0 0 1-10 8H56a10 10 0 0 1-10-8L38 46Z" fill="#fffdf8" stroke="#cfc2a8" stroke-width="2" />
+                    <path d="M30 46h100" stroke="#cfc2a8" stroke-width="3" stroke-linecap="round" />
+                    <circle cx="66" cy="34" r="12" fill="#d9503f" />
+                    <path d="M66 21c4-5 9-6 13-3-3 5-8 6-13 3Z" fill="#4f7a52" />
+                    <path d="M92 24c8 2 13 8 12 16-8 1-14-4-15-11l3-5Z" fill="#7aa06b" />
+                    <path d="M50 70c8-6 16-6 24 0M74 84c8-6 16-6 24 0" stroke="#e4dccb" stroke-width="2.5" stroke-linecap="round" />
+                  </svg>
+                </div>
+                <h3>把冰箱剩料變成今晚的驚喜</h3>
+                <p>先加入至少一樣食材，大廚就會幫你規劃菜單。</p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <p>剩食料理靈感由 AI 生成，請自行確認食材新鮮度、過敏原與熟度。</p>
+        <p class="footer-tech">Cloudflare Workers · Workers AI · Static Assets</p>
+      </footer>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="/app.js" defer></script>
+  </body>
+</html>

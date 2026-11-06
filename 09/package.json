@@ -1,0 +1,14 @@
+{
+  "name": "fridge-recipe-master",
+  "version": "1.0.0",
+  "private": true,
+  "description": "一週冰箱剩食食譜大師 - 用 Cloudflare Workers AI 把冰箱剩料變成晚餐",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "check": "wrangler deploy --dry-run --outdir dist"
+  },
+  "devDependencies": {
+    "wrangler": "^4.158.0"
+  }
+}
