@@ -2,6 +2,8 @@
 
 輸入冰箱裡剩下的食材，Cloudflare Workers AI 會扮演五星級大廚，規劃 1–2 道 20 分鐘內能完成的晚餐，優先幫你消耗剩食。
 
+線上版本：<https://fridge-recipe-master.fridge-recipe-master.workers.dev>
+
 ## 功能
 
 - 食材標籤輸入：按 Enter、逗號或頓號即可加入；支援 Backspace 快速移除。
@@ -53,10 +55,10 @@ npx wrangler login
 npm run deploy
 ```
 
-部署成功後終端機會顯示網址，例如：
+部署成功後終端機會顯示網址。本專案目前的線上版本：
 
 ```
-https://fridge-recipe-master.<你的-subdomain>.workers.dev
+https://fridge-recipe-master.fridge-recipe-master.workers.dev
 ```
 
 ### 部署前檢查
